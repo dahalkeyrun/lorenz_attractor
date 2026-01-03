@@ -4,25 +4,32 @@ import numpy as np
 from numpy import dtype
 # shader source code 
 VERTEX_SHADER_SOURCE = """
+#version 330 core
 layout (location = 0) in vec3 aPos;
-uniform mat4 MVP; // Model-View-Projection Matrix
+uniform mat4 MVP;
+out vec3 vPos; // Pass position to fragment shader
 
 void main() {
-    // Transform the 3D Lorenz point to screen space
     gl_Position = MVP * vec4(aPos, 1.0);
+    vPos = aPos; 
 }
 """
 
 FRAGMENT_SHADER_SOURCE = """
 #version 330 core
 out vec4 FragColor;
-uniform vec3 uColor;
+in vec3 vPos;
 
 void main() {
-    // Set the color of the line
-    FragColor = vec4(uColor, 1.0);
+    // Create a rainbow effect based on coordinates
+    // We normalize the Lorenz range (approx -20 to 20 for x/y, 0 to 50 for z)
+    float r = (vPos.x + 20.0) / 40.0;
+    float g = (vPos.y + 20.0) / 40.0;
+    float b = vPos.z / 50.0;
+    FragColor = vec4(r, g, b, 1.0);
 }
 """
+
 
 def perspective (fov, aspect, near, far):
     """Creates a prespective projection matrix"""
@@ -43,7 +50,7 @@ def look_at(eye, target, up):
     f /= np.linalg.norm(f)
     s = np.cross(f, up)
     s /= np.linalg.norm(s)
-    u = up.cross(s, f)
+    u = np.cross(s, f)
 
     m = np.identity(4, dtype=np.float32)
     m[0, :3] = s
