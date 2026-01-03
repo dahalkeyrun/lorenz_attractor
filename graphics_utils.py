@@ -1,5 +1,7 @@
 from OpenGL.GL import *
-
+import math
+import numpy as np
+from numpy import dtype
 # shader source code 
 VERTEX_SHADER_SOURCE = """
 layout (location = 0) in vec3 aPos;
@@ -21,6 +23,37 @@ void main() {
     FragColor = vec4(uColor, 1.0);
 }
 """
+
+def perspective (fov, aspect, near, far):
+    """Creates a prespective projection matrix"""
+    f = 1.0/math.tan(math.radians(fov) / 2)
+    matrix = np.zeros((4, 4), dtype=np.float32)
+    matrix[0, 0] = f / aspect
+    matrix[1, 1] = f
+    matrix[2, 2] = (far + near) / (near - far)
+    matrix[2, 3] = (2 * far * near) / (near - far)
+    matrix[3, 2] = -1 
+
+    return matrix
+
+
+def look_at(eye, target, up):
+    """creates a view matrix (the camera position/direction)"""
+    f = (target - eye)
+    f /= np.linalg.norm(f)
+    s = np.cross(f, up)
+    s /= np.linalg.norm(s)
+    u = up.cross(s, f)
+
+    m = np.identity(4, dtype=np.float32)
+    m[0, :3] = s
+    m[1, :3] = u
+    m[2, :3] = -f
+
+    t = np.identity(4, dtype=np.float32)
+    t[:3, 3] = -eye
+
+    return m @ t
 
 def create_shader_program():
     #1. compile vertex shader
