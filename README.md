@@ -54,8 +54,7 @@ When prompted:
 - `requirements.txt` - Python dependencies
 
 ## Demo Video
-## Demo Video
-[![Watch the demo](thumbnail.png)](lorenz_attractor1.mp4)
+[(Lorenz_demo](lorenz_gif.gif)
 ## Theory
 The Lorenz system is defined by:
 ```
