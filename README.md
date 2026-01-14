@@ -55,7 +55,7 @@ When prompted:
 
 ## Demo Video
 ## Demo Video
-[![Watch the demo](thumbnail.png)](lorenz_attractor.mp4)
+[![Watch the demo](thumbnail.png)](lorenz_attractor1.mp4)
 ## Theory
 The Lorenz system is defined by:
 ```
