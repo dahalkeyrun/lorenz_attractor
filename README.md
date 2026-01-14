@@ -53,8 +53,8 @@ When prompted:
 - `graphics_utils.py` - OpenGL utilities (shaders, buffers, matrices)
 - `requirements.txt` - Python dependencies
 
-## Demo Video
-[(Lorenz_demo](lorenz_gif.gif)
+## Demo
+![(Lorenz_demo](lorenz_gif.gif)
 ## Theory
 The Lorenz system is defined by:
 ```
