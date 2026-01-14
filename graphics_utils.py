@@ -1,17 +1,16 @@
 from OpenGL.GL import *
 import math
 import numpy as np
-from numpy import dtype
-# shader source code 
+
+# Updated Shaders with a "UseColor" toggle
 VERTEX_SHADER_SOURCE = """
 #version 330 core
 layout (location = 0) in vec3 aPos;
 uniform mat4 MVP;
-out vec3 vPos; // Pass position to fragment shader
-
+out vec3 vPos;
 void main() {
     gl_Position = MVP * vec4(aPos, 1.0);
-    vPos = aPos; 
+    vPos = aPos;
 }
 """
 
@@ -19,16 +18,40 @@ FRAGMENT_SHADER_SOURCE = """
 #version 330 core
 out vec4 FragColor;
 in vec3 vPos;
+uniform bool uUseSolidColor;
+uniform vec3 uSolidColor;
 
 void main() {
-    // Create a rainbow effect based on coordinates
-    // We normalize the Lorenz range (approx -20 to 20 for x/y, 0 to 50 for z)
-    float r = (vPos.x + 20.0) / 40.0;
-    float g = (vPos.y + 20.0) / 40.0;
-    float b = vPos.z / 50.0;
-    FragColor = vec4(r, g, b, 1.0);
+    if (uUseSolidColor) {
+        FragColor = vec4(uSolidColor, 1.0);
+    } else {
+        // Rainbow logic for Lorenz
+        float r = (vPos.x + 30.0) / 60.0;
+        float g = (vPos.y + 30.0) / 60.0;
+        float b = vPos.z / 60.0;
+        FragColor = vec4(r, g, b, 1.0);
+    }
 }
 """
+
+def create_axes_buffer(length=60):
+    """Creates a VAO/VBO for X, Y, Z axes lines."""
+    # X axis (red), Y axis (green), Z axis (blue) in one list
+    # Lines go from -length to +length
+    vertices = np.array([
+        -length, 0, 0,  length, 0, 0, # X
+        0, -length, 0,  0, length, 0, # Y
+        0, 0, -length,  0, 0, length  # Z
+    ], dtype=np.float32)
+
+    vao = glGenVertexArrays(1)
+    vbo = glGenBuffers(1)
+    glBindVertexArray(vao)
+    glBindBuffer(GL_ARRAY_BUFFER, vbo)
+    glBufferData(GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL_STATIC_DRAW)
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, None)
+    glEnableVertexAttribArray(0)
+    return vao, 6 # 6 vertices total
 
 
 def perspective (fov, aspect, near, far):
